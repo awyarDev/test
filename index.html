@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ئاوەیە وەچی ئەوەی</title>
+<title>ئاوەیە وەچی ئەوەی — یاری تەختە</title>
 <style>
 @font-face {
   font-family: 'KF';
@@ -39,6 +39,7 @@
   --t1: #eef0f8;
   --t2: #9aa0bc;
   --t3: #5c6280;
+  --green:    #6fbf4c;
   --font: 'KF', 'Noto Naskh Arabic', serif;
   --ease: cubic-bezier(.25,.46,.45,.94);
   --tr: .3s;
@@ -539,6 +540,19 @@ body {
 .brow-fill.amber { background: linear-gradient(90deg, var(--amber), var(--amber2)); }
 .brow-val { font-size: .72rem; color: var(--t3); min-width: 30px; text-align: left; }
 
+/* ═══ PAGE 5 — GAME / SPIN WHEEL ═══ */
+.game-wrap { max-width: 620px; margin: 0 auto; padding: 0 16px 20px; }
+.wheel-container { position: relative; margin: 20px auto 30px; width: 280px; height: 280px; }
+@media (min-width: 500px) { .wheel-container { width: 340px; height: 340px; } }
+canvas#wheelCanvas { width: 100% !important; height: 100% !important; border-radius: 50%; box-shadow: 0 10px 30px rgba(0,0,0,.5), 0 0 0 3px var(--amber-b); transition: box-shadow .2s; }
+.spin-btn { display: block; margin: 20px auto 0; background: linear-gradient(135deg, var(--amber), #e0a830); border: none; border-radius: 60px; padding: 14px 32px; font-family: var(--font); font-size: 1.2rem; font-weight: bold; color: #1a1406; cursor: pointer; box-shadow: 0 6px 0 #7a5c1a; transition: .07s linear; width: fit-content; }
+.spin-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #7a5c1a; }
+.result-card { background: var(--glass2); border: 1px solid var(--border2); border-radius: 20px; padding: 20px; margin-top: 25px; text-align: center; }
+.result-name { font-size: 1.7rem; font-weight: 800; background: linear-gradient(135deg, var(--amber2), #ffdd88); -webkit-background-clip: text; background-clip: text; color: transparent; margin: 8px 0; }
+.result-label { font-size: .75rem; color: var(--t3); letter-spacing: 2px; }
+.wheel-history { margin-top: 15px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.history-badge { background: var(--ink3); border: 1px solid var(--border); border-radius: 30px; padding: 4px 12px; font-size: .7rem; color: var(--t2); }
+
 /* ═══ FOOTER ═══ */
 .footer {
   text-align: center; padding: 32px 20px 20px;
@@ -596,6 +610,7 @@ body {
   .cdown-n { font-size: 1.5rem; }
   .tbar { padding: 12px 16px; }
   .brow-lbl { min-width: 90px; font-size: .72rem; }
+  .wheel-container { width: 260px; height: 260px; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -626,181 +641,66 @@ body {
   </div>
 </div>
 
-<!-- APP (everything inside here is hidden until login) -->
+<!-- APP -->
 <div id="app">
-
-  <!-- TOP BAR -->
   <div class="tbar">
-    <div class="tbar-logo">
-      <div class="tbar-logo-dot"></div>
-      ئاوەیە وەچی ئەوەی
-    </div>
+    <div class="tbar-logo"><div class="tbar-logo-dot"></div> ئاوەیە وەچی ئەوەی</div>
     <div class="tbar-clock" id="clk">--:--:--</div>
   </div>
 
-  <!-- PAGES -->
-
-  <!-- P1: MARRIAGE -->
+  <!-- PAGE 1: MARRIAGE -->
   <div class="pg on" id="pg-marriage">
-    <div class="hero">
-      <div class="hero-eyebrow">پێشبینیی فەرمی</div>
-      <h1>لیستی هاوسەرگیری</h1>
-      <div class="hero-sub">ڕیزبەندی نوێترین پێشبینیەکان</div>
-    </div>
-
+    <div class="hero"><div class="hero-eyebrow">پێشبینیی فەرمی</div><h1>لیستی هاوسەرگیری</h1><div class="hero-sub">ڕیزبەندی نوێترین پێشبینیەکان</div></div>
     <div class="podium" id="podium"></div>
-
-    <div class="m-ctrl">
-      <div class="m-search">
-        <span class="m-search-ic">🔍</span>
-        <input type="text" id="m-search" placeholder="گەڕان بە ناو ...">
-      </div>
-      <div class="m-counter">کەس <strong id="m-cnt">13</strong></div>
-    </div>
-
-    <div class="rank-list" id="rank-list"></div>
-    <div class="no-res" id="no-res">هیچ ناوێک نەدۆزرایەوە</div>
+    <div class="m-ctrl"><div class="m-search"><span class="m-search-ic">🔍</span><input type="text" id="m-search" placeholder="گەڕان بە ناو ..."></div><div class="m-counter">کەس <strong id="m-cnt">13</strong></div></div>
+    <div class="rank-list" id="rank-list"></div><div class="no-res" id="no-res">هیچ ناوێک نەدۆزرایەوە</div>
   </div>
 
-  <!-- P2: VOTE -->
+  <!-- PAGE 2: VOTE -->
   <div class="pg" id="pg-vote">
-    <div class="hero">
-      <div class="hero-eyebrow">دەنگدانی گروپ</div>
-      <h1>کۆمسیۆنی باڵای هەڵبژاردنەکانی ئاوەیە وەچی ئەوەی</h1>
-      <div class="hero-sub">دەنگدان مافێکی شایستەی تۆیە دەنگ بدە</div>
-    </div>
-    <div class="vote-wrap">
-      <div class="vote-info-bar">ℹ تەنها بە کلیک کردن دەتوانیت دەنگی خۆت بدەیت بە نزیکترین بەربژێر.</div>
-      <div class="vote-meta">
-        <div class="vote-total">کۆی دەنگەکان: <strong id="v-total">٠</strong></div>
-        <div class="voted-badge" id="v-badge">✓ دەنگت دراوە</div>
-      </div>
-      <div id="v-list"></div>
-      <div class="vote-actions">
-        <button class="btn-ghost" id="v-reset">سڕینەوەی دەنگم</button>
-      </div>
-    </div>
+    <div class="hero"><div class="hero-eyebrow">دەنگدانی گروپ</div><h1>کۆمسیۆنی باڵای هەڵبژاردنەکانی ئاوەیە وەچی ئەوەی</h1><div class="hero-sub">دەنگدان مافێکی شایستەی تۆیە دەنگ بدە</div></div>
+    <div class="vote-wrap"><div class="vote-info-bar">ℹ تەنها بە کلیک کردن دەتوانیت دەنگی خۆت بدەیت بە نزیکترین بەربژێر.</div><div class="vote-meta"><div class="vote-total">کۆی دەنگەکان: <strong id="v-total">٠</strong></div><div class="voted-badge" id="v-badge">✓ دەنگت دراوە</div></div><div id="v-list"></div><div class="vote-actions"><button class="btn-ghost" id="v-reset">سڕینەوەی دەنگم</button></div></div>
   </div>
 
-  <!-- P3: EVENTS -->
+  <!-- PAGE 3: EVENTS -->
   <div class="pg" id="pg-events">
-    <div class="hero">
-      <div class="hero-eyebrow">بەرنامەی گروپ</div>
-      <h1>ڕووداوەکان</h1>
-      <div class="hero-sub">بەرنامەی داهاتوو و مێژووی گروپ</div>
-    </div>
-    <div class="ev-wrap">
-      <div class="cdown-card">
-        <div class="cdown-lbl">★ ڕووداوی داهاتوو ★</div>
-        <div class="cdown-name" id="cd-name">ڕوداوێکی مێژوویی</div>
-        <div class="cdown-grid">
-          <div class="cdown-box"><span class="cdown-n" id="cd-d">00</span><span class="cdown-u">ڕۆژ</span></div>
-          <div class="cdown-box"><span class="cdown-n" id="cd-h">00</span><span class="cdown-u">کاتژمێر</span></div>
-          <div class="cdown-box"><span class="cdown-n" id="cd-m">00</span><span class="cdown-u">خولەک</span></div>
-          <div class="cdown-box"><span class="cdown-n" id="cd-s">00</span><span class="cdown-u">چرکە</span></div>
-        </div>
-      </div>
-
-      <div class="ev-section-title"> مێژووی گروپ</div>
-      <div class="ev-list">
-        <div class="ecard">
-          <div class="ecard-line"><div class="ecard-dot a"></div></div>
-          <div class="ecard-body">
-            <div class="ecard-date">٢٠٢٣ — دروستبوون</div>
-            <div class="ecard-title">گروپی ئاوەیە وەچی ئەوەی دروست بوو</div>
-            <div class="ecard-desc">گروپی ئاوەیە وەچی ئەوەی سەکۆیەکی گرنگی چالاکیەکانە</div>
-            <span class="ecard-tag a">برایەتی و هەمی دنیا</span>
-          </div>
-        </div>
-        <div class="ecard">
-          <div class="ecard-line"><div class="ecard-dot"></div></div>
-          <div class="ecard-body">
-            <div class="ecard-date">٢٠٢٥ — چالاکی</div>
-            <div class="ecard-title">گروپی ئاوەیە وەجی ئەوەی و سەردان</div>
-            <div class="ecard-desc">بە فەرمی سەردانی هەردوو ئەندامی گروپ ئاوەیەر پشتیوان و ڕاسان بلال کرا لە ڕۆژی تەخەرووجەکەیان و بڕوانامەی ڕێزلێنانی ئاوەیە وەچی ئەوەیان پێ بەخشرا</div>
-            <span class="ecard-tag">سەردانیکردن</span>
-          </div>
-        </div>
-        <div class="ecard">
-          <div class="ecard-line"><div class="ecard-dot"></div></div>
-          <div class="ecard-body">
-            <div class="ecard-date">٢٠٢٦ — ئەمساڵ</div>
-            <div class="ecard-title">وێبسایتی فەرمی گروپ ئامادە بوو</div>
-            <div class="ecard-desc">بە فەرمی یەکەم وەشانی وێبسایتی ئاوەیە وەچی ئەوەی بەردەست خرا</div>
-            <span class="ecard-tag">ئاوەیە وەچی ئەوەی و تەکنەلۆجیا</span>
-          </div>
-        </div>
-        <div class="ecard">
-          <div class="ecard-line"><div class="ecard-dot r"></div></div>
-          <div class="ecard-body">
-            <div class="ecard-date">ئەیلووڵ ٢٠٢٦ — داهاتوو</div>
-            <div class="ecard-title">ڕووداوێکی گرنگ ڕوو دەدات</div>
-            <div class="ecard-desc">چاوڕەێ دەکەین بۆ ئەو ڕۆژە مەزنە</div>
-            <span class="ecard-tag a">گرنگترین ڕووداو</span>
-          </div>
-        </div>
-      </div>
-    </div>
+    <div class="hero"><div class="hero-eyebrow">بەرنامەی گروپ</div><h1>ڕووداوەکان</h1><div class="hero-sub">بەرنامەی داهاتوو و مێژووی گروپ</div></div>
+    <div class="ev-wrap"><div class="cdown-card"><div class="cdown-lbl">★ ڕووداوی داهاتوو ★</div><div class="cdown-name" id="cd-name">ڕوداوێکی مێژوویی</div><div class="cdown-grid"><div class="cdown-box"><span class="cdown-n" id="cd-d">00</span><span class="cdown-u">ڕۆژ</span></div><div class="cdown-box"><span class="cdown-n" id="cd-h">00</span><span class="cdown-u">کاتژمێر</span></div><div class="cdown-box"><span class="cdown-n" id="cd-m">00</span><span class="cdown-u">خولەک</span></div><div class="cdown-box"><span class="cdown-n" id="cd-s">00</span><span class="cdown-u">چرکە</span></div></div></div><div class="ev-section-title"> مێژووی گروپ</div><div class="ev-list"><div class="ecard"><div class="ecard-line"><div class="ecard-dot a"></div></div><div class="ecard-body"><div class="ecard-date">٢٠٢٣ — دروستبوون</div><div class="ecard-title">گروپی ئاوەیە وەچی ئەوەی دروست بوو</div><div class="ecard-desc">گروپی ئاوەیە وەچی ئەوەی سەکۆیەکی گرنگی چالاکیەکانە</div><span class="ecard-tag a">برایەتی و هەمی دنیا</span></div></div><div class="ecard"><div class="ecard-line"><div class="ecard-dot"></div></div><div class="ecard-body"><div class="ecard-date">٢٠٢٥ — چالاکی</div><div class="ecard-title">گروپی ئاوەیە وەجی ئەوەی و سەردان</div><div class="ecard-desc">بە فەرمی سەردانی هەردوو ئەندامی گروپ ئاوەیەر پشتیوان و ڕاسان بلال کرا لە ڕۆژی تەخەرووجەکەیان و بڕوانامەی ڕێزلێنانی ئاوەیە وەچی ئەوەیان پێ بەخشرا</div><span class="ecard-tag">سەردانیکردن</span></div></div><div class="ecard"><div class="ecard-line"><div class="ecard-dot"></div></div><div class="ecard-body"><div class="ecard-date">٢٠٢٦ — ئەمساڵ</div><div class="ecard-title">وێبسایتی فەرمی گروپ ئامادە بوو</div><div class="ecard-desc">بە فەرمی یەکەم وەشانی وێبسایتی ئاوەیە وەچی ئەوەی بەردەست خرا</div><span class="ecard-tag">ئاوەیە وەچی ئەوەی و تەکنەلۆجیا</span></div></div><div class="ecard"><div class="ecard-line"><div class="ecard-dot r"></div></div><div class="ecard-body"><div class="ecard-date">ئەیلووڵ ٢٠٢٦ — داهاتوو</div><div class="ecard-title">ڕووداوێکی گرنگ ڕوو دەدات</div><div class="ecard-desc">چاوڕەێ دەکەین بۆ ئەو ڕۆژە مەزنە</div><span class="ecard-tag a">گرنگترین ڕووداو</span></div></div></div></div>
   </div>
 
-  <!-- P4: STATS -->
+  <!-- PAGE 4: STATS -->
   <div class="pg" id="pg-stats">
-    <div class="hero">
-      <div class="hero-eyebrow">داتای فەرمی</div>
-      <h1>ئامارەکان</h1>
-      <div class="hero-sub">لێژە ژمارەکان دەدوێن</div>
-    </div>
-    <div class="stats-wrap">
-      <div class="kpi-row">
-        <div class="kpi">
-          <span class="kpi-n">13</span>
-          <span class="kpi-l">ئەندامی لیست</span>
-        </div>
-        <div class="kpi">
-          <span class="kpi-n">%0</span>
-          <span class="kpi-l">ڕیژەی هاوسەرگیری 😅</span>
-        </div>
-        <div class="kpi">
-          <span class="kpi-n">%99.4</span>
-          <span class="kpi-l">پێشبینیکراون</span>
-        </div>
-      </div>
+    <div class="hero"><div class="hero-eyebrow">داتای فەرمی</div><h1>ئامارەکان</h1><div class="hero-sub">لێژە ژمارەکان دەدوێن</div></div>
+    <div class="stats-wrap"><div class="kpi-row"><div class="kpi"><span class="kpi-n">13</span><span class="kpi-l">ئەندامی لیست</span></div><div class="kpi"><span class="kpi-n">%0</span><span class="kpi-l">ڕیژەی هاوسەرگیری 😅</span></div><div class="kpi"><span class="kpi-n">%99.4</span><span class="kpi-l">پێشبینیکراون</span></div></div><div class="chart-card"><div class="chart-title">دەنگی لیست — بەپێی ئەندامان</div><div id="sb-vote"></div></div></div>
+  </div>
 
-      <div class="chart-card">
-        <div class="chart-title">دەنگی لیست — بەپێی ئەندامان</div>
-        <div id="sb-vote"></div>
+  <!-- PAGE 5: GAME / SPIN WHEEL (NEW) -->
+  <div class="pg" id="pg-game">
+    <div class="hero"><div class="hero-eyebrow">🎡 یاری تایبەت</div><h1>تەختەی سوڕانەوە</h1><div class="hero-sub"> کلیک بکە و با بسوڕێ مامۆسا!</div></div>
+    <div class="game-wrap">
+      <div class="wheel-container"><canvas id="wheelCanvas" width="500" height="500"></canvas></div>
+      <button class="spin-btn" id="spinWheelBtn">🔄 سوڕانەوە</button>
+      <div class="result-card">
+        <div class="result-label">ئەم کەسە هەڵبژێردرا:</div>
+        <div class="result-name" id="wheelResultName">---</div>
+        <div class="result-label">مێژووی سوڕانەوە</div>
+        <div class="wheel-history" id="wheelHistory"></div>
       </div>
-
-      <!-- <div class="chart-card">
-        <div class="chart-title">ئامارە سەرەکییەکانی گروپ</div>
-        <div>
-          <div class="brow"><div class="brow-lbl">قسە لەسەر هاوسەرگیری</div><div class="brow-track"><div class="brow-fill" style="width:97%"></div></div><div class="brow-val">٪٩٧</div></div>
-          <div class="brow"><div class="brow-lbl">دەنگدان بۆ کەسانی دیکە</div><div class="brow-track"><div class="brow-fill" style="width:100%"></div></div><div class="brow-val">٪١٠٠</div></div>
-          <div class="brow"><div class="brow-lbl">ئامادەبوون بۆ هاوسەرگیری</div><div class="brow-track"><div class="brow-fill amber" style="width:12%"></div></div><div class="brow-val">٪١٢</div></div>
-          <div class="brow"><div class="brow-lbl">گۆڕینی بیروڕا بەسەر خۆیدا</div><div class="brow-track"><div class="brow-fill amber" style="width:4%"></div></div><div class="brow-val">٪٤</div></div>
-          <div class="brow"><div class="brow-lbl">سەرگەرمی گروپ</div><div class="brow-track"><div class="brow-fill" style="width:99%"></div></div><div class="brow-val">٪٩٩</div></div>
-        </div>
-      </div> -->
     </div>
   </div>
 
   <!-- FOOTER -->
-  <footer class="footer">
-    <div class="footer-inner">
-      <div class="footer-dev">گەشەپێدەر: <strong>Awyar Pshtewan</strong></div>
-      <div class="footer-copy">© 2026 هەموو مافەکان پارێزراون — ئاوەیە وەچی ئەوەی</div>
-    </div>
-  </footer>
+  <footer class="footer"><div class="footer-inner"><div class="footer-dev">گەشەپێدەر: <strong>Awyar Pshtewan</strong></div><div class="footer-copy">© 2026 هەموو مافەکان پارێزراون — ئاوەیە وەچی ئەوەی</div></div></footer>
 
-  <!-- BOTTOM NAV (inside app - hidden until login) -->
+  <!-- BOTTOM NAV (with new GAME button) -->
   <nav class="bnav" id="bnav">
     <button class="bnav-btn active" data-pg="marriage"><span class="bi">💍</span>هاوسەرگیری</button>
     <button class="bnav-btn" data-pg="vote"><span class="bi">🗳️</span>دەنگدان</button>
     <button class="bnav-btn" data-pg="events"><span class="bi">📅</span>ڕووداو</button>
     <button class="bnav-btn" data-pg="stats"><span class="bi">📊</span>ئامار</button>
+    <button class="bnav-btn" data-pg="game"><span class="bi">🎮</span>یاری</button>
   </nav>
-
-</div><!-- /app -->
+</div>
 
 <button id="btt" aria-label="سەرەوە">↑</button>
 <div id="toast"></div>
@@ -809,7 +709,7 @@ body {
 (function(){
 'use strict';
 
-// DATA
+// DATA (same as original)
 const PEOPLE = [
   {r:1,  n:'دادیار حاجی فاروق',    s:'⚜'},
   {r:2,  n:'دانیار ئاری',           s:'◈'},
@@ -818,7 +718,7 @@ const PEOPLE = [
   {r:5,  n:'ئاکار قطب الدین',      s:'✦'},
   {r:6,  n:'بینەر یوسف',           s:'✧'},
   {r:7,  n:'حاجی دانیار ئەرسەلان', s:'⬩'},
-    {r:8,  n:'دروود زمناکۆ',         s:'⬩'},
+  {r:8,  n:'دروود زمناکۆ',         s:'⬩'},
   {r:9,  n:'ئاویەر پشتیوان',       s:'✦'},
   {r:10, n:'باڤین بهاالدین',       s:'❖'},
   {r:11, n:'ئارۆ نەبەرد',          s:'❖'},
@@ -831,7 +731,7 @@ const VKEY = 'aww_v2';
 function ar(n){ return String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]); }
 function pad(n){ return String(n).padStart(2,'0'); }
 
-// CANVAS BG
+// CANVAS BG (original)
 const cv = document.getElementById('cv');
 const ctx = cv.getContext('2d');
 let W,H,pts=[],orbs=[];
@@ -871,32 +771,20 @@ class Orb{
     ctx.fillStyle=g; ctx.fill();
   }
 }
-function initBg(){
-  rsz();
-  pts=Array.from({length:75},()=>new Dot());
-  orbs=Array.from({length:4},()=>new Orb());
-}
-function drawBg(){
-  const g=ctx.createLinearGradient(0,0,W,H);
-  g.addColorStop(0,'#060810'); g.addColorStop(1,'#0a0d18');
-  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
-  orbs.forEach(o=>{o.tick();o.draw()});
-  pts.forEach(p=>{p.tick();p.draw()});
-  requestAnimationFrame(drawBg);
-}
+function initBg(){ rsz(); pts=Array.from({length:75},()=>new Dot()); orbs=Array.from({length:4},()=>new Orb()); }
+function drawBg(){ const g=ctx.createLinearGradient(0,0,W,H); g.addColorStop(0,'#060810'); g.addColorStop(1,'#0a0d18'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H); orbs.forEach(o=>{o.tick();o.draw()}); pts.forEach(p=>{p.tick();p.draw()}); requestAnimationFrame(drawBg); }
 window.addEventListener('resize',()=>{rsz();});
 initBg(); drawBg();
 
 // LOADER
 setTimeout(()=>document.getElementById('ldr').classList.add('gone'), 800);
 
-// LOGIN
+// LOGIN (original)
 const lgnEl=document.getElementById('lgn');
 const appEl=document.getElementById('app');
 const pwdEl=document.getElementById('pwd');
 const errEl=document.getElementById('lgn-err');
 const btnEl=document.getElementById('lgn-btn');
-
 function doLogin(){
   if(pwdEl.value===PASS){
     lgnEl.classList.add('out');
@@ -912,10 +800,7 @@ btnEl.addEventListener('click',doLogin);
 pwdEl.addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
 
 // CLOCK
-function tickClk(){
-  const n=new Date();
-  document.getElementById('clk').textContent=`${pad(n.getHours())}:${pad(n.getMinutes())}:${pad(n.getSeconds())}`;
-}
+function tickClk(){ const n=new Date(); document.getElementById('clk').textContent=`${pad(n.getHours())}:${pad(n.getMinutes())}:${pad(n.getSeconds())}`; }
 
 // COUNTDOWN
 const CD_TARGET=new Date('2026-10-01T18:00:00');
@@ -928,7 +813,7 @@ function tickCd(){
   document.getElementById('cd-s').textContent=pad(Math.floor((diff%6e4)/1e3));
 }
 
-// NAV
+// NAV (updated with game page)
 function initNav(){
   document.querySelectorAll('.bnav-btn').forEach(btn=>{
     btn.addEventListener('click',()=>{
@@ -937,72 +822,55 @@ function initNav(){
       btn.classList.add('active');
       document.getElementById('pg-'+btn.dataset.pg).classList.add('on');
       window.scrollTo({top:0,behavior:'smooth'});
+      // redraw wheel if game page becomes visible
+      if(btn.dataset.pg === 'game' && typeof redrawWheel === 'function') redrawWheel();
     });
   });
 }
 
-// MARRIAGE
+// MARRIAGE (original)
 function buildPodium(){
   const el=document.getElementById('podium');
   const top3=PEOPLE.slice(0,3);
   const order=[top3[1],top3[0],top3[2]];
   const icons=['🥈','👑','🥉'];
   const cls=['','pod-1',''];
-  el.innerHTML=order.map((p,i)=>`
-    <div class="pod ${cls[i]}">
-      <span class="pod-ico">${icons[i]}</span>
-      <span class="pod-rank">${ar(p.r)}</span>
-      <span class="pod-name">${p.n}</span>
-    </div>`).join('');
+  el.innerHTML=order.map((p,i)=>`<div class="pod ${cls[i]}"><span class="pod-ico">${icons[i]}</span><span class="pod-rank">${ar(p.r)}</span><span class="pod-name">${p.n}</span></div>`).join('');
 }
 function buildRanks(q){
   const el=document.getElementById('rank-list');
   const nr=document.getElementById('no-res');
   const ql=q.trim().toLowerCase();
   const f=PEOPLE.filter(p=>!ql||p.n.toLowerCase().includes(ql));
-  el.innerHTML=f.map((p,i)=>`
-    <div class="rcard" style="animation-delay:${i*.03}s">
-      <div class="rcard-num">${ar(p.r)}</div>
-      <div class="rcard-name">${p.n}</div>
-      <div class="rcard-sym">${p.s}</div>
-    </div>`).join('');
+  el.innerHTML=f.map((p,i)=>`<div class="rcard" style="animation-delay:${i*.03}s"><div class="rcard-num">${ar(p.r)}</div><div class="rcard-name">${p.n}</div><div class="rcard-sym">${p.s}</div></div>`).join('');
   document.getElementById('m-cnt').textContent=ar(f.length);
   nr.classList.toggle('on',f.length===0);
 }
 document.getElementById('m-search').addEventListener('input',function(){ buildRanks(this.value); });
 
-// VOTE
-function getVD(){ try{return JSON.parse(localStorage.getItem(VKEY))||{mv:null,c:{}};}catch{return{mv:null,c:{}};}  }
+// VOTE (original)
+function getVD(){ try{return JSON.parse(localStorage.getItem(VKEY))||{mv:null,c:{}};}catch{return{mv:null,c:{}};} }
 function setVD(d){ try{localStorage.setItem(VKEY,JSON.stringify(d));}catch{} }
-
 function renderVotes(){
   const d=getVD();
   const tot=Object.values(d.c).reduce((a,b)=>a+b,0);
   document.getElementById('v-total').textContent=ar(tot);
   document.getElementById('v-badge').classList.toggle('on',d.mv!==null);
-
   document.getElementById('v-list').innerHTML=PEOPLE.map(p=>{
     const cnt=d.c[p.r]||0;
     const pct=tot>0?Math.round(cnt/tot*100):0;
     const pick=d.mv===p.r;
-    return `<div class="vcard${pick?' picked':''}" data-r="${p.r}">
-      <div class="vc-rank">${ar(p.r)}</div>
-      <div class="vc-name">${p.n}</div>
-      <div class="vc-right">
-        <div class="vc-bar-bg"><div class="vc-bar" style="width:${pct}%"></div></div>
-        <div class="vc-pct">${pct}٪ — ${ar(cnt)}</div>
-      </div>
-    </div>`;}).join('');
-
+    return `<div class="vcard${pick?' picked':''}" data-r="${p.r}"><div class="vc-rank">${ar(p.r)}</div><div class="vc-name">${p.n}</div><div class="vc-right"><div class="vc-bar-bg"><div class="vc-bar" style="width:${pct}%"></div></div><div class="vc-pct">${pct}٪ — ${ar(cnt)}</div></div></div>`;
+  }).join('');
   document.querySelectorAll('.vcard').forEach(c=>{
     c.addEventListener('click',()=>{
       const r=parseInt(c.dataset.r);
-      const d=getVD();
-      if(d.mv===r)return;
-      if(d.mv!==null) d.c[d.mv]=Math.max(0,(d.c[d.mv]||1)-1);
-      d.c[r]=(d.c[r]||0)+1;
-      d.mv=r;
-      setVD(d);
+      const d2=getVD();
+      if(d2.mv===r)return;
+      if(d2.mv!==null) d2.c[d2.mv]=Math.max(0,(d2.c[d2.mv]||1)-1);
+      d2.c[r]=(d2.c[r]||0)+1;
+      d2.mv=r;
+      setVD(d2);
       renderVotes(); renderSBVote();
       toast('✓ دەنگت درا بۆ '+PEOPLE.find(p=>p.r===r).n);
     });
@@ -1016,8 +884,6 @@ document.getElementById('v-reset').addEventListener('click',()=>{
   renderVotes(); renderSBVote();
   toast('دەنگەکەت سڕایەوە');
 });
-
-// STATS VOTE BARS
 function renderSBVote(){
   const d=getVD();
   const tot=Object.values(d.c).reduce((a,b)=>a+b,0);
@@ -1026,12 +892,102 @@ function renderSBVote(){
   document.getElementById('sb-vote').innerHTML=sorted.map(p=>{
     const cnt=d.c[p.r]||0;
     const w=mx>0?Math.round(cnt/mx*100):0;
-    return `<div class="brow">
-      <div class="brow-lbl">${p.n}</div>
-      <div class="brow-track"><div class="brow-fill" style="width:${w}%"></div></div>
-      <div class="brow-val">${ar(cnt)}</div>
-    </div>`;}).join('');
+    return `<div class="brow"><div class="brow-lbl">${p.n}</div><div class="brow-track"><div class="brow-fill" style="width:${w}%"></div></div><div class="brow-val">${ar(cnt)}</div></div>`;
+  }).join('');
 }
+
+// ========== SPIN WHEEL GAME ==========
+let wheelCanvas = document.getElementById('wheelCanvas');
+let ctxWheel = wheelCanvas.getContext('2d');
+let currentRotation = 0;
+let spinning = false;
+const colors = ['#d4a843','#5b9bd5','#c9607a','#6fbf4c','#b07fd0','#e0915a','#3fa7a0','#d46b8a','#8b6b4a','#5f9e6e','#ba7ba1','#6395c9','#e0ac6c'];
+
+function drawWheel(rotationRad = 0){
+  const size = wheelCanvas.width;
+  const center = size/2;
+  const radius = size/2 - 5;
+  const angleStep = (Math.PI * 2) / PEOPLE.length;
+  ctxWheel.clearRect(0,0,size,size);
+  for(let i=0; i<PEOPLE.length; i++){
+    const start = i * angleStep + rotationRad;
+    const end = start + angleStep;
+    ctxWheel.beginPath();
+    ctxWheel.moveTo(center, center);
+    ctxWheel.arc(center, center, radius, start, end);
+    ctxWheel.fillStyle = colors[i % colors.length];
+    ctxWheel.fill();
+    ctxWheel.save();
+    ctxWheel.translate(center, center);
+    ctxWheel.rotate(start + angleStep/2);
+    ctxWheel.textAlign = "center";
+    ctxWheel.textBaseline = "middle";
+    ctxWheel.fillStyle = "#fff";
+    ctxWheel.font = `bold ${Math.max(12, size/24)}px "KF", "Noto Naskh Arabic"`;
+    let shortName = PEOPLE[i].n.length > 10 ? PEOPLE[i].n.slice(0,8)+'..' : PEOPLE[i].n;
+    ctxWheel.fillText(shortName, radius*0.65, 6);
+    ctxWheel.restore();
+  }
+  ctxWheel.beginPath();
+  ctxWheel.arc(center, center, 15, 0, 2*Math.PI);
+  ctxWheel.fillStyle = "#f7d44a";
+  ctxWheel.fill();
+  ctxWheel.beginPath();
+  ctxWheel.moveTo(center-10, 5);
+  ctxWheel.lineTo(center+10, 5);
+  ctxWheel.lineTo(center, 22);
+  ctxWheel.fillStyle = "#ffcc55";
+  ctxWheel.fill();
+}
+
+function getSelectedIndex(rotationRad){
+  const angleStep = (Math.PI * 2) / PEOPLE.length;
+  let pointerAngle = (Math.PI * 3 / 2) % (Math.PI*2);
+  let raw = (pointerAngle - rotationRad + 2*Math.PI) % (2*Math.PI);
+  let idx = Math.floor(raw / angleStep) % PEOPLE.length;
+  return idx;
+}
+
+function spinWheel(){
+  if(spinning) return;
+  spinning = true;
+  const extraSpins = 5 + Math.random() * 8;
+  const targetDelta = (Math.PI * 2) * extraSpins + Math.random() * Math.PI * 2;
+  const startRot = currentRotation;
+  const targetRot = startRot + targetDelta;
+  const startTime = performance.now();
+  const duration = 2200;
+  function animateSpin(now){
+    const elapsed = now - startTime;
+    let t = Math.min(1, elapsed / duration);
+    const easeOut = 1 - Math.pow(1-t, 3);
+    const newRot = startRot + targetDelta * easeOut;
+    currentRotation = newRot % (Math.PI*2);
+    drawWheel(currentRotation);
+    if(t < 1){
+      requestAnimationFrame(animateSpin);
+    } else {
+      const finalIdx = getSelectedIndex(currentRotation % (Math.PI*2));
+      const winner = PEOPLE[finalIdx];
+      document.getElementById('wheelResultName').innerHTML = winner.n;
+      let historyDiv = document.getElementById('wheelHistory');
+      let newBadge = document.createElement('span');
+      newBadge.className = 'history-badge';
+      newBadge.textContent = winner.n;
+      historyDiv.prepend(newBadge);
+      if(historyDiv.children.length > 8) historyDiv.removeChild(historyDiv.lastChild);
+      toast(`🔄 تەختە سوڕایەوە! براوە: ${winner.n}`);
+      spinning = false;
+    }
+  }
+  requestAnimationFrame(animateSpin);
+}
+
+function initWheel(){
+  drawWheel(0);
+  document.getElementById('spinWheelBtn').addEventListener('click', () => spinWheel());
+}
+window.redrawWheel = () => drawWheel(currentRotation);
 
 // BACK TOP
 const btt=document.getElementById('btt');
@@ -1046,7 +1002,7 @@ function toast(msg){
   clearTimeout(tt); tt=setTimeout(()=>el.classList.remove('on'),2600);
 }
 
-// BOOT
+// BOOT (original + wheel init)
 function boot(){
   initNav();
   buildPodium();
@@ -1055,6 +1011,7 @@ function boot(){
   renderSBVote();
   tickClk(); setInterval(tickClk,1000);
   tickCd(); setInterval(tickCd,1000);
+  initWheel();
 }
 
 })();
